@@ -12,7 +12,7 @@ class AsyncCsvWriterByMap:
         self.fileHandler = open(fileName, 'a')
         self.fileHandler.truncate(0)
 
-        self.fileHandler.write("Index;Total,"+";".join(expectedKeys)+"\n")
+        self.fileHandler.write("Index;Total;"+";".join(expectedKeys)+"\n")
             
     def flush(self):
         indexToDelete = -1

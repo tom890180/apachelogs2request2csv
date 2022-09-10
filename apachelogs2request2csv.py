@@ -11,6 +11,8 @@ from AsyncCsvWriterBySequentialMap import AsyncCsvWriterBySequentialMap
 
 def request(url, counter, sequentialRequestCounter, ranAt, starttime):
 
+    url = url_prepend + url
+
     started = time.time() - starttime
 
     exception = "N/A"
@@ -39,8 +41,8 @@ def request(url, counter, sequentialRequestCounter, ranAt, starttime):
             format(ranAt, '.5f').replace(".", ","),
             format(started, '.5f').replace(".", ","),
             format(started - ranAt, '.5f').replace(".", ","),
-            format(elapsed, '.5f').replace(".", ","),
-            format(elapsed_real, '.5f').replace(".", ","),
+            format(elapsed * 1000, '.5f').replace(".", ","),
+            format(elapsed_real * 1000, '.5f').replace(".", ","),
             url,
             str(status_code),
             requestResult,
@@ -49,11 +51,14 @@ def request(url, counter, sequentialRequestCounter, ranAt, starttime):
 
 def main(argv):
 
-    opts, args = getopt.getopt(argv,"hi:s:d:")
+    opts, args = getopt.getopt(argv,"hi:s:d:p:")
+
+    global url_prepend
 
     input_accesslog = ""
     output_summary = ""
     output_detailed = ""
+    url_prepend = ""
 
     for opt, arg in opts:
         if opt == '-h':
@@ -65,6 +70,8 @@ def main(argv):
             output_summary = arg
         elif opt in ("-d"):
             output_detailed = arg
+        elif opt in ("-p"):
+            url_prepend = arg
 
 
     request_map, request_count_map, last_key, total_requests = apachelogs2array.parse(input_accesslog)
