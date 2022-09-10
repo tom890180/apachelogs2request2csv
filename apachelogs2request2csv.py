@@ -13,7 +13,7 @@ def request(url, counter, sequentialRequestCounter, ranAt, starttime):
 
     started = time.time() - starttime
 
-    exception = ""
+    exception = "N/A"
     status_code = -1
     requestResult = ""
 
@@ -36,12 +36,11 @@ def request(url, counter, sequentialRequestCounter, ranAt, starttime):
         result2csvDetailed.setValue(sequentialRequestCounter, [
             str(sequentialRequestCounter),
             str(counter),
-            str(elapsed),
-            str(ranAt),
-            str(started),
-            str(started - ranAt),
-            str(elapsed),
-            str(elapsed_real),
+            format(ranAt, '.5f').replace(".", ","),
+            format(started, '.5f').replace(".", ","),
+            format(started - ranAt, '.5f').replace(".", ","),
+            format(elapsed, '.5f').replace(".", ","),
+            format(elapsed_real, '.5f').replace(".", ","),
             url,
             str(status_code),
             requestResult,
