@@ -1,3 +1,5 @@
+from threading import Lock
+
 class AsyncCsvWriterByMap:
 
     expectedValues = {}
@@ -13,9 +15,11 @@ class AsyncCsvWriterByMap:
         self.fileHandler.truncate(0)
 
         self.fileHandler.write("Index;Total;"+";".join(expectedKeys)+"\n")
+
+        self.lock = Lock()
             
     def flush(self):
-        indexToDelete = -1
+        self.lock.acquire()
 
         for i in self.expectedValues.copy():
             totalCount = 0
@@ -45,6 +49,8 @@ class AsyncCsvWriterByMap:
 
         if len(self.expectedValues.keys()) == 0:
             self.fileHandler.close()
+
+        self.lock.release()
 
 
     def incrementType(self, index, type):
