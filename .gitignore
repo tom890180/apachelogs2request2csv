@@ -1,0 +1,4 @@
+access.log
+output_summary.csv
+output_detailed.csv
+__pycache__
