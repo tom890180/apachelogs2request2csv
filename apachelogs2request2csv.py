@@ -8,6 +8,7 @@ import threading
 import apachelogs2array
 from AsyncCsvWriterByMap import AsyncCsvWriterByMap
 from AsyncCsvWriterBySequentialMap import AsyncCsvWriterBySequentialMap
+from datetime import datetime
 
 def request(url, counter, sequentialRequestCounter, ranAt, starttime):
 
@@ -38,6 +39,7 @@ def request(url, counter, sequentialRequestCounter, ranAt, starttime):
         result2csvDetailed.setValue(sequentialRequestCounter, [
             str(sequentialRequestCounter),
             str(counter),
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             format(ranAt, '.5f').replace(".", ","),
             format(started, '.5f').replace(".", ","),
             format(started - ranAt, '.5f').replace(".", ","),
@@ -86,6 +88,7 @@ def main(argv):
     result2csvDetailed = AsyncCsvWriterBySequentialMap(total_requests, [
         "Index",
         "Second",
+        "real_time",
         "QueuedThread",
         "StartedThread",
         "ThreadDiff",
