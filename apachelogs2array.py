@@ -36,9 +36,11 @@ def parse(path):
             request_map[key] = []
             request_count_map[key] = 0
 
-        request_map[key].append(entry.request_line.split(" "))
-        request_count_map[key] = request_count_map[key] + 1
-
+        try:
+            request_map[key].append(entry.request_line.split(" "))
+            request_count_map[key] = request_count_map[key] + 1
+        except:
+            print("failed {}".format(line))
         total_requests = total_requests + 1
         
 
