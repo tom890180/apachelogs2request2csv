@@ -9,6 +9,7 @@ import apachelogs2array
 from AsyncCsvWriterByMap import AsyncCsvWriterByMap
 from AsyncCsvWriterBySequentialMap import AsyncCsvWriterBySequentialMap
 from datetime import datetime
+import urllib
 
 def request(url, counter, sequentialRequestCounter, ranAt, starttime):
 
@@ -22,9 +23,9 @@ def request(url, counter, sequentialRequestCounter, ranAt, starttime):
 
     elapsed_start_real = time.perf_counter()
     try:
-        response = requests.get(url)
-        elapsed = response.elapsed.total_seconds()
-        status_code = response.status_code
+        response = urllib.request.urlopen(url)
+        elapsed = 0
+        status_code = response.status
         result2csvSummary.incrementType(counter, "SUCCESS")
         requestResult = "SUCCESS"
     except Exception as e:
