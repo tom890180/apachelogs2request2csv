@@ -11,9 +11,12 @@ from AsyncCsvWriterBySequentialMap import AsyncCsvWriterBySequentialMap
 from datetime import datetime
 import urllib
 
+ongoing_requests = 0
+
 def request(url, counter, sequentialRequestCounter, ranAt, starttime):
 
     url = url_prepend + url
+    global ongoing_requests
 
     started = time.time() - starttime
 
@@ -40,6 +43,7 @@ def request(url, counter, sequentialRequestCounter, ranAt, starttime):
         result2csvDetailed.setValue(sequentialRequestCounter, [
             str(sequentialRequestCounter),
             str(counter),
+            str(ongoing_requests),
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             format(ranAt, '.5f').replace(".", ","),
             format(started, '.5f').replace(".", ","),
@@ -51,21 +55,24 @@ def request(url, counter, sequentialRequestCounter, ranAt, starttime):
             requestResult,
             exception
         ])
+        ongoing_requests = ongoing_requests - 1
 
 def main(argv):
 
-    opts, args = getopt.getopt(argv,"hi:s:d:p:")
+    opts, args = getopt.getopt(argv,"hi:s:d:p:r:")
 
     global url_prepend
+    global ongoing_requests
 
     input_accesslog = ""
     output_summary = ""
     output_detailed = ""
     url_prepend = ""
+    max_requests_per_second = 0
 
     for opt, arg in opts:
         if opt == '-h':
-            print('-i <apache access log input file> -s <output summary file> -d <output detailed file>')
+            print('-i <apache access log input file> -s <output summary file> -d <output detailed file> -r <max_requests_per_second, none: 0>')
             sys.exit()
         elif opt in ("-i"):
             input_accesslog = arg
@@ -75,6 +82,8 @@ def main(argv):
             output_detailed = arg
         elif opt in ("-p"):
             url_prepend = arg
+        elif opt in ("-r"):
+            max_requests_per_second = int(arg)
 
 
     request_map, request_count_map, last_key, total_requests = apachelogs2array.parse(input_accesslog)
@@ -89,6 +98,7 @@ def main(argv):
     result2csvDetailed = AsyncCsvWriterBySequentialMap(total_requests, [
         "Index",
         "Second",
+        "Ongoing_Requests",
         "real_time",
         "QueuedThread",
         "StartedThread",
@@ -113,9 +123,14 @@ def main(argv):
         print("tick {}, sleep {}, sec {}".format(now - starttime, sleep, tick))
 
         if tick in request_map:
+            requestsOnSecond = 0
             for req in request_map[tick]:
+                if max_requests_per_second != 0 and max_requests_per_second < requestsOnSecond: break
+
                 threading.Thread(target=request, args=[req[1], counter, sequentialRequestCounter, now - starttime, starttime]).start()
                 sequentialRequestCounter = sequentialRequestCounter + 1
+                requestsOnSecond = requestsOnSecond + 1
+                ongoing_requests = ongoing_requests + 1
 
         counter = counter + 1
         if (counter - 1) >= last_key:
