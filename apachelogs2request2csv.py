@@ -53,6 +53,7 @@ def request(url, counter, sequentialRequestCounter, ranAt, starttime):
             url,
             str(status_code),
             requestResult,
+            str(response.getheader('X-Cache-Status')),
             exception
         ])
         ongoing_requests = ongoing_requests - 1
@@ -108,6 +109,7 @@ def main(argv):
         "URL",
         "Status_Code",
         "RequestResult",
+        "X-Cache-Status",
         "Exception"
     ], output_detailed)
 
