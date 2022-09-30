@@ -13,6 +13,17 @@ import urllib
 
 ongoing_requests = 0
 
+def cachestatus2numeric(status):
+    if status == "HIT": return 1
+    if status == "REVALIDATED": return 2
+    if status == "UPDATING": return 3
+    if status == "STALE": return 4
+    if status == "EXPIRED": return 5
+    if status == "BYPASS": return 6
+    if status == "MISS": return 7
+    return -1
+
+
 def request(url, counter, sequentialRequestCounter, ranAt, starttime):
 
     url = url_prepend + url
@@ -54,6 +65,7 @@ def request(url, counter, sequentialRequestCounter, ranAt, starttime):
             str(status_code),
             requestResult,
             str(response.getheader('X-Cache-Status')),
+            str(cachestatus2numeric(response.getheader('X-Cache-Status'))),
             exception
         ])
         ongoing_requests = ongoing_requests - 1
@@ -110,6 +122,7 @@ def main(argv):
         "Status_Code",
         "RequestResult",
         "X-Cache-Status",
+        "X-Cache-Status2",
         "Exception"
     ], output_detailed)
 
