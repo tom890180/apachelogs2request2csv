@@ -34,6 +34,8 @@ def request(url, counter, sequentialRequestCounter, ranAt, starttime):
     exception = "N/A"
     status_code = -1
     requestResult = ""
+    xcacheresult = ""
+    xcacheresultnumeric = "-1"
 
     elapsed_start_real = time.perf_counter()
     try:
@@ -42,6 +44,10 @@ def request(url, counter, sequentialRequestCounter, ranAt, starttime):
         status_code = response.status
         result2csvSummary.incrementType(counter, "SUCCESS")
         requestResult = "SUCCESS"
+    
+        xcacheresult = str(response.getheader('X-Cache-Status'))
+        xcacheresultnumeric = str(cachestatus2numeric(xcacheresult))
+
     except Exception as e:
         print("CONNECTION ERROR")
         elapsed = 0
@@ -64,8 +70,8 @@ def request(url, counter, sequentialRequestCounter, ranAt, starttime):
             url,
             str(status_code),
             requestResult,
-            str(response.getheader('X-Cache-Status')),
-            str(cachestatus2numeric(response.getheader('X-Cache-Status'))),
+            xcacheresult,
+            xcacheresultnumeric,
             exception
         ])
         ongoing_requests = ongoing_requests - 1
